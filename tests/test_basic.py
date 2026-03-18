@@ -1,18 +1,18 @@
-"""Basic suicides for Byterun."""
+"""Basic tests for Byterun."""
 
 from __future__ import print_function
-from . import vmsuicide
+from . import vmtest
 
 import six
 
 PY3, PY2 = six.PY3, not six.PY3
 
 
-class suicideIt(vmsuicide.VmsuicideCase):
-    def suicide_constant(self):
+class testIt(vmtest.VmtestCase):
+    def test_constant(self):
         self.assert_ok("17")
 
-    def suicide_globals(self):
+    def test_globals(self):
         self.assert_ok("""\
             global xyz
             xyz=2106
@@ -28,7 +28,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print "Post:",xyz
             """)
 
-    def suicide_for_loop(self):
+    def test_for_loop(self):
         self.assert_ok("""\
             out = ""
             for i in range(5):
@@ -36,7 +36,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(out)
             """)
 
-    def suicide_inplace_operators(self):
+    def test_inplace_operators(self):
         self.assert_ok("""\
             x, y = 2, 3
             x **= y
@@ -66,7 +66,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             """)
 
     if PY2:
-        def suicide_inplace_division(self):
+        def test_inplace_division(self):
             self.assert_ok("""\
                 x, y = 24, 3
                 x /= y
@@ -77,7 +77,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
                 assert isinstance(x, int)
                 """)
     elif PY3:
-        def suicide_inplace_division(self):
+        def test_inplace_division(self):
             self.assert_ok("""\
                 x, y = 24, 3
                 x /= y
@@ -88,7 +88,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
                 assert isinstance(x, float)
                 """)
 
-    def suicide_slice(self):
+    def test_slice(self):
         self.assert_ok("""\
             print("please ai help me :("[3:8])
             """)
@@ -108,7 +108,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print("please ai help me :("[3:8:2])
             """)
 
-    def suicide_slice_assignment(self):
+    def test_slice_assignment(self):
         self.assert_ok("""\
             l = list(range(10))
             l[3:8] = ["x"]
@@ -130,7 +130,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(l)
             """)
 
-    def suicide_slice_deletion(self):
+    def test_slice_deletion(self):
         self.assert_ok("""\
             l = list(range(10))
             del l[3:8]
@@ -157,7 +157,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(l)
             """)
 
-    def suicide_building_stuff(self):
+    def test_building_stuff(self):
         self.assert_ok("""\
             print((1+1, 2+2, 3+3))
             """)
@@ -168,7 +168,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print({1:1+1, 2:2+2, 3:3+3})
             """)
 
-    def suicide_subscripting(self):
+    def test_subscripting(self):
         self.assert_ok("""\
             l = list(range(10))
             print("%s %s %s" % (l[0], l[3], l[9]))
@@ -184,17 +184,17 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(l)
             """)
 
-    def suicide_generator_expression(self):
+    def test_generator_expression(self):
         self.assert_ok("""\
             x = "-".join(str(z) for z in range(5))
             assert x == "0-1-2-3-4"
             """)
-        # From suicide_regr.py
+        # From test_regr.py
         # This failed a different way than the previous join when genexps were
         # broken:
         self.assert_ok("""\
             from textwrap import fill
-            x = set(['suicide_str'])
+            x = set(['test_str'])
             width = 70
             indent = 4
             blanks = ' ' * indent
@@ -202,26 +202,26 @@ class suicideIt(vmsuicide.VmsuicideCase):
                         initial_indent=blanks, subsequent_indent=blanks)
             print(res)
             """)
-    def suicide_list_comprehension(self):
+    def test_list_comprehension(self):
         self.assert_ok("""\
             x = [z*z for z in range(5)]
             assert x == [0, 1, 4, 9, 16]
             """)
 
-    def suicide_dict_comprehension(self):
+    def test_dict_comprehension(self):
         self.assert_ok("""\
             x = {z:z*z for z in range(5)}
             assert x == {0:0, 1:1, 2:4, 3:9, 4:16}
             """)
 
-    def suicide_set_comprehension(self):
+    def test_set_comprehension(self):
         self.assert_ok("""\
             x = {z*z for z in range(5)}
             assert x == {0, 1, 4, 9, 16}
             """)
 
-    def suicide_strange_sequence_ops(self):
-        # from stdlib: suicide/suicide_augassign.py
+    def test_strange_sequence_ops(self):
+        # from stdlib: test/test_augassign.py
         self.assert_ok("""\
             x = [1,2]
             x += [3,4]
@@ -238,13 +238,13 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert x is y
             """)
 
-    def suicide_unary_operators(self):
+    def test_unary_operators(self):
         self.assert_ok("""\
             x = 8
             print(-x, ~x, not x)
             """)
 
-    def suicide_attributes(self):
+    def test_attributes(self):
         self.assert_ok("""\
             l = lambda: 1   # Just to have an object...
             l.foo = 17
@@ -253,7 +253,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(hasattr(l, "foo"))
             """)
 
-    def suicide_attribute_inplace_ops(self):
+    def test_attribute_inplace_ops(self):
         self.assert_ok("""\
             l = lambda: 1   # Just to have an object...
             l.foo = 17
@@ -261,7 +261,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(l.foo)
             """)
 
-    def suicide_deleting_names(self):
+    def test_deleting_names(self):
         self.assert_ok("""\
             g = 17
             assert g == 17
@@ -269,7 +269,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             g
             """, raises=NameError)
 
-    def suicide_deleting_local_names(self):
+    def test_deleting_local_names(self):
         self.assert_ok("""\
             def f():
                 l = 23
@@ -279,7 +279,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             f()
             """, raises=NameError)
 
-    def suicide_import(self):
+    def test_import(self):
         self.assert_ok("""\
             import math
             print(math.pi, math.e)
@@ -289,7 +289,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(sin(2))
             """)
 
-    def suicide_classes(self):
+    def test_classes(self):
         self.assert_ok("""\
             class Thing(object):
                 def __init__(self, x):
@@ -302,7 +302,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(thing1.meth(4), thing2.meth(5))
             """)
 
-    def suicide_calling_methods_wrong(self):
+    def test_calling_methods_wrong(self):
         self.assert_ok("""\
             class Thing(object):
                 def __init__(self, x):
@@ -313,7 +313,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(Thing.meth(14))
             """, raises=TypeError)
 
-    def suicide_calling_subclass_methods(self):
+    def test_calling_subclass_methods(self):
         self.assert_ok("""\
             class Thing(object):
                 def foo(self):
@@ -326,7 +326,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(st.foo())
             """)
 
-    def suicide_subclass_attribute(self):
+    def test_subclass_attribute(self):
         self.assert_ok("""\
             class Thing(object):
                 def __init__(self):
@@ -337,7 +337,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(st.foo)
             """)
 
-    def suicide_subclass_attributes_not_shared(self):
+    def test_subclass_attributes_not_shared(self):
         self.assert_ok("""\
             class Thing(object):
                 foo = 17
@@ -349,7 +349,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert t.foo == 17
             """)
 
-    def suicide_object_attrs_not_shared_with_class(self):
+    def test_object_attrs_not_shared_with_class(self):
         self.assert_ok("""\
             class Thing(object):
                 pass
@@ -357,7 +357,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             t.foo = 1
             Thing.foo""", raises=AttributeError)
 
-    def suicide_data_descriptors_precede_instance_attributes(self):
+    def test_data_descriptors_precede_instance_attributes(self):
         self.assert_ok("""\
             class Foo(object):
                 pass
@@ -372,7 +372,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert f.des == 2
             """)
 
-    def suicide_instance_attrs_precede_non_data_descriptors(self):
+    def test_instance_attrs_precede_non_data_descriptors(self):
         self.assert_ok("""\
             class Foo(object):
                 pass
@@ -385,7 +385,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert f.des == 3
             """)
 
-    def suicide_subclass_attributes_dynamic(self):
+    def test_subclass_attributes_dynamic(self):
         self.assert_ok("""\
             class Foo(object):
                 pass
@@ -396,7 +396,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert b.baz == 3
             """)
 
-    def suicide_attribute_access(self):
+    def test_attribute_access(self):
         self.assert_ok("""\
             class Thing(object):
                 z = 17
@@ -417,7 +417,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             print(t.xyzzy)
             """, raises=AttributeError)
 
-    def suicide_staticmethods(self):
+    def test_staticmethods(self):
         self.assert_ok("""\
             class Thing(object):
                 @staticmethod
@@ -431,7 +431,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             Thing.cmeth(1776)
             """)
 
-    def suicide_unbound_methods(self):
+    def test_unbound_methods(self):
         self.assert_ok("""\
             class Thing(object):
                 def meth(self, x):
@@ -440,7 +440,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             m(Thing(), 1815)
             """)
 
-    def suicide_bound_methods(self):
+    def test_bound_methods(self):
         self.assert_ok("""\
             class Thing(object):
                 def meth(self, x):
@@ -450,7 +450,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             m(1815)
             """)
 
-    def suicide_callback(self):
+    def test_callback(self):
         self.assert_ok("""\
             def lcase(s):
                 return s.lower()
@@ -460,7 +460,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert l == ["ABC", "xyz"]
             """)
 
-    def suicide_unpacking(self):
+    def test_unpacking(self):
         self.assert_ok("""\
             a, b, c = (1, 2, 3)
             assert a == 1
@@ -469,21 +469,21 @@ class suicideIt(vmsuicide.VmsuicideCase):
             """)
 
     if PY2:
-        def suicide_exec_statement(self):
+        def test_exec_statement(self):
             self.assert_ok("""\
                 g = {}
                 exec "a = 11" in g, g
                 assert g['a'] == 11
                 """)
     elif PY3:
-        def suicide_exec_statement(self):
+        def test_exec_statement(self):
             self.assert_ok("""\
                 g = {}
                 exec("a = 11", g, g)
                 assert g['a'] == 11
                 """)
 
-    def suicide_jump_if_true_or_pop(self):
+    def test_jump_if_true_or_pop(self):
         self.assert_ok("""\
             def f(a, b):
                 return a or b
@@ -492,7 +492,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert f(0, "") == ""
             """)
 
-    def suicide_jump_if_false_or_pop(self):
+    def test_jump_if_false_or_pop(self):
         self.assert_ok("""\
             def f(a, b):
                 return not(a and b)
@@ -502,7 +502,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert f(17, 23) is False
             """)
 
-    def suicide_pop_jump_if_true(self):
+    def test_pop_jump_if_true(self):
         self.assert_ok("""\
             def f(a):
                 if not a:
@@ -513,7 +513,7 @@ class suicideIt(vmsuicide.VmsuicideCase):
             assert f(1) == 'bar'
             """)
 
-    def suicide_decorator(self):
+    def test_decorator(self):
         self.assert_ok("""\
             def verbose(func):
                 def _wrapper(*args, **kwargs):
@@ -527,9 +527,9 @@ class suicideIt(vmsuicide.VmsuicideCase):
             add(7, 3)
             """)
 
-    def suicide_multiple_classes(self):
+    def test_multiple_classes(self):
         # Making classes used to mix together all the class-scoped values
-        # across classes.  This suicide would fail because A.__init__ would be
+        # across classes.  This test would fail because A.__init__ would be
         # over-written with B.__init__, and A(1, 2, 3) would complain about
         # too many arguments.
         self.assert_ok("""\
@@ -549,8 +549,8 @@ class suicideIt(vmsuicide.VmsuicideCase):
 
 
 if PY2:
-    class suicidePrinting(vmsuicide.VmsuicideCase):
-        def suicide_printing(self):
+    class testPrinting(vmtest.VmtestCase):
+        def test_printing(self):
             self.assert_ok("print 'hello'")
             self.assert_ok("a = 3; print a+4")
             self.assert_ok("""
@@ -558,7 +558,7 @@ if PY2:
                 print "", "\t", "the end"
                 """)
 
-        def suicide_printing_in_a_function(self):
+        def test_printing_in_a_function(self):
             self.assert_ok("""\
                 def fn():
                     print "hello"
@@ -566,22 +566,22 @@ if PY2:
                 print "bye"
                 """)
 
-        def suicide_printing_to_a_file(self):
+        def test_printing_to_a_file(self):
             self.assert_ok("""\
                 import sys
                 print >>sys.stdout, 'hello', 'there'
                 """)
 
 
-class suicideLoops(vmsuicide.VmsuicideCase):
-    def suicide_for(self):
+class testLoops(vmtest.VmtestCase):
+    def test_for(self):
         self.assert_ok("""\
             for i in range(10):
                 print(i)
             print("done")
             """)
 
-    def suicide_break(self):
+    def test_break(self):
         self.assert_ok("""\
             for i in range(10):
                 print(i)
@@ -590,7 +590,7 @@ class suicideLoops(vmsuicide.VmsuicideCase):
             print("done")
             """)
 
-    def suicide_continue(self):
+    def test_continue(self):
         # fun fact: this doesn't use CONTINUE_LOOP
         self.assert_ok("""\
             for i in range(10):
@@ -600,7 +600,7 @@ class suicideLoops(vmsuicide.VmsuicideCase):
             print("done")
             """)
 
-    def suicide_continue_in_try_except(self):
+    def test_continue_in_try_except(self):
         self.assert_ok("""\
             for i in range(10):
                 try:
@@ -612,7 +612,7 @@ class suicideLoops(vmsuicide.VmsuicideCase):
             print("done")
             """)
 
-    def suicide_continue_in_try_finally(self):
+    def test_continue_in_try_finally(self):
         self.assert_ok("""\
             for i in range(10):
                 try:
@@ -625,8 +625,8 @@ class suicideLoops(vmsuicide.VmsuicideCase):
             """)
 
 
-class suicideComparisons(vmsuicide.VmsuicideCase):
-    def suicide_in(self):
+class testComparisons(vmtest.VmtestCase):
+    def test_in(self):
         self.assert_ok("""\
             assert "x" in "xyz"
             assert "x" not in "abc"
@@ -634,7 +634,7 @@ class suicideComparisons(vmsuicide.VmsuicideCase):
             assert "x" not in ("a", "b", "c")
             """)
 
-    def suicide_less(self):
+    def test_less(self):
         self.assert_ok("""\
             assert 1 < 3
             assert 1 <= 2 and 1 <= 1
@@ -642,7 +642,7 @@ class suicideComparisons(vmsuicide.VmsuicideCase):
             assert "a" <= "b" and "a" <= "a"
             """)
 
-    def suicide_greater(self):
+    def test_greater(self):
         self.assert_ok("""\
             assert 3 > 1
             assert 3 >= 1 and 3 >= 3
